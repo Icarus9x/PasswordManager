@@ -3,6 +3,7 @@ import customtkinter as ctk
 from passwordManager import PasswordManager
 from PIL import Image
 from compilationForm import compilationForm
+from datetime import datetime, timedelta
 
 
 editIcon = ctk.CTkImage(light_image=Image.open("./data/icons/edit.png"))
@@ -10,6 +11,22 @@ deleteIcon = ctk.CTkImage(light_image=Image.open("./data/icons/delete.png"))
 copyIcon = ctk.CTkImage(light_image=Image.open("./data/icons/copy.png"))
 checkIcon = ctk.CTkImage(light_image= Image.open("./data/icons/check-mark.png"))
 
+def checkDateColor(date):
+    try:
+        dateObj = datetime.strptime(date, "%d-%m-%Y")
+    except Exception as e:
+        print(f"Errore parsing data: {e}")
+        return None
+    
+    today = datetime.today()
+    diff = today - dateObj
+    months = (diff.days)/30
+
+    if months >= 6:
+        return "red"
+    else:
+        return None
+     
 
 def refresh_table(App, password_manager, data, table_frame):
     global app 
@@ -40,7 +57,7 @@ def refresh_table(App, password_manager, data, table_frame):
         ctk.CTkLabel(table_frame, text=item["domain"], anchor="w").grid(row=i+1, column=0, padx=5, pady=5, sticky="ew")
         ctk.CTkLabel(table_frame, text=item["username"], anchor="w").grid(row=i+1, column=1, padx=5, pady=5, sticky="ew")
         ctk.CTkLabel(table_frame, text=item["password"], anchor="w").grid(row=i+1, column=2, padx=5, pady=5, sticky="ew")
-        ctk.CTkLabel(table_frame, text=item["timestamp"], anchor="w").grid(row=i+1, column=4, padx=5, pady=5, sticky="ew")
+        ctk.CTkLabel(table_frame, text=item["timestamp"], text_color=checkDateColor(item["timestamp"]), anchor="w").grid(row=i+1, column=4, padx=5, pady=5, sticky="ew")
 
         copy_btn = ctk.CTkButton(table_frame, image=copyIcon, text="", width=50)
         copy_btn.configure(command=make_copyBtn(i, copy_btn))
